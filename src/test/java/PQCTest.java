@@ -63,4 +63,36 @@ public class PQCTest {
 
         assertTrue(verified);
     }
+
+    @Test
+    public void testDilithium3() throws Exception {
+        // Generate Dilithium3 key pair
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("Dilithium", "BCPQC");
+        kpg.initialize(DilithiumParameterSpec.dilithium3);
+        KeyPair kp = kpg.generateKeyPair();
+
+        // Message to sign
+        byte[] message = "Testing Dilithium3 signature algorithm".getBytes();
+
+        // Sign the message
+        Signature sig = Signature.getInstance("Dilithium", "BCPQC");
+        sig.initSign(kp.getPrivate());
+        sig.update(message);
+        byte[] signature = sig.sign();
+
+        // Verify the signature
+        sig.initVerify(kp.getPublic());
+        sig.update(message);
+        boolean verified = sig.verify(signature);
+
+        assertTrue(verified, "Dilithium3 signature verification should succeed");
+
+        // Test with modified message (should fail)
+        byte[] modifiedMessage = "Modified message".getBytes();
+        sig.initVerify(kp.getPublic());
+        sig.update(modifiedMessage);
+        boolean verifiedModified = sig.verify(signature);
+
+        assertFalse(verifiedModified, "Dilithium3 signature verification should fail for modified message");
+    }
 }
