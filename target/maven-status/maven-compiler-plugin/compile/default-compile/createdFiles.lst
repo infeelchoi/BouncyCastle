@@ -1,0 +1,5 @@
+com/example/pqc/jwt/Dilithium3Verifier.class
+com/example/pqc/jwt/Dilithium3Algorithm.class
+com/example/pqc/jwt/PQCKeyManager.class
+com/example/pqc/jwt/Dilithium3Signer.class
+com/example/pqc/jwt/PQCJwtManager.class

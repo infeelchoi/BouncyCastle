@@ -18,45 +18,45 @@ public class PQCTest {
 
     @Test
     public void testKyber() throws Exception {
-        // Generate Kyber key pair
+        // Kyber 키 쌍 생성
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("Kyber", "BCPQC");
         kpg.initialize(KyberParameterSpec.kyber1024);
         KeyPair kp = kpg.generateKeyPair();
 
-        // Simulate a secret key to wrap
-        byte[] secretKeyBytes = "secretkey1234567890123456".getBytes(); // 256-bit key
+        // 래핑할 비밀 키 시뮬레이션
+        byte[] secretKeyBytes = "secretkey1234567890123456".getBytes(); // 256-bit 키
         SecretKey secretKey = new SecretKeySpec(secretKeyBytes, "AES");
 
-        // Wrap the key
+        // 키 래핑
         Cipher cipher = Cipher.getInstance("Kyber", "BCPQC");
         cipher.init(Cipher.WRAP_MODE, kp.getPublic());
         byte[] wrappedKey = cipher.wrap(secretKey);
 
-        // Unwrap the key
+        // 키 언래핑
         cipher.init(Cipher.UNWRAP_MODE, kp.getPrivate());
         SecretKey recoveredKey = (SecretKey) cipher.unwrap(wrappedKey, "AES", Cipher.SECRET_KEY);
 
-        // Verify the keys match
+        // 키가 일치하는지 검증
         assertArrayEquals(secretKey.getEncoded(), recoveredKey.getEncoded());
     }
 
     @Test
     public void testDilithium() throws Exception {
-        // Generate Dilithium key pair
+        // Dilithium 키 쌍 생성
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("Dilithium", "BCPQC");
         kpg.initialize(DilithiumParameterSpec.dilithium5);
         KeyPair kp = kpg.generateKeyPair();
 
-        // Message to sign
+        // 서명할 메시지
         byte[] message = "Hello, PQC!".getBytes();
 
-        // Sign the message
+        // 메시지 서명
         Signature sig = Signature.getInstance("Dilithium", "BCPQC");
         sig.initSign(kp.getPrivate());
         sig.update(message);
         byte[] signature = sig.sign();
 
-        // Verify the signature
+        // 서명 검증
         sig.initVerify(kp.getPublic());
         sig.update(message);
         boolean verified = sig.verify(signature);
@@ -66,28 +66,28 @@ public class PQCTest {
 
     @Test
     public void testDilithium3() throws Exception {
-        // Generate Dilithium3 key pair
+        // Dilithium3 키 쌍 생성
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("Dilithium", "BCPQC");
         kpg.initialize(DilithiumParameterSpec.dilithium3);
         KeyPair kp = kpg.generateKeyPair();
 
-        // Message to sign
+        // 서명할 메시지
         byte[] message = "Testing Dilithium3 signature algorithm".getBytes();
 
-        // Sign the message
+        // 메시지 서명
         Signature sig = Signature.getInstance("Dilithium", "BCPQC");
         sig.initSign(kp.getPrivate());
         sig.update(message);
         byte[] signature = sig.sign();
 
-        // Verify the signature
+        // 서명 검증
         sig.initVerify(kp.getPublic());
         sig.update(message);
         boolean verified = sig.verify(signature);
 
         assertTrue(verified, "Dilithium3 signature verification should succeed");
 
-        // Test with modified message (should fail)
+        // 변조된 메시지로 테스트 (실패해야 함)
         byte[] modifiedMessage = "Modified message".getBytes();
         sig.initVerify(kp.getPublic());
         sig.update(modifiedMessage);
